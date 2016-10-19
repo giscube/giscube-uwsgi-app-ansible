@@ -1,0 +1,50 @@
+[uwsgi]
+procname-prefix-spaced=/apps/%c
+
+chdir = %d/app
+{% if APP_UWSGI_MODULE != '' %}
+module = {{ APP_UWSGI_MODULE }}
+{% else %}
+mount = {{ APP_URL }}={{ APP_NAME }}/wsgi.py
+manage-script-name = true
+needs-app = true
+{% endif %}
+
+touch-reload = %d/uwsgi3.ini
+
+# set enviroment variables from ini file.
+# http://stackoverflow.com/a/23733905/593907
+for-readline = %d/vars.ini
+  env = %(_)
+endfor =
+
+# define if needed
+venv = %d/venv
+
+# execution
+socket = %d/uwsgi.sock
+
+workers = 1
+threads = 5
+max-requests = 1000
+
+cheap
+idle = 10
+die-on-idle = true
+
+# logging
+logto = %d/log.log
+log-date = true
+logfile-chown = true
+
+# system
+uid = www-data
+gid = www-data
+buffer-size = 32768
+master = true
+chmod = 660
+reload-os-env = true
+auto-procname = true
+no-orphans = true
+vacuum = true
+die-on-term = true

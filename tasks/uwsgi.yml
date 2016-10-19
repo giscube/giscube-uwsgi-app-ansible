@@ -1,0 +1,32 @@
+---
+
+- set_fact:
+      UWSGI_INI_FILE=uwsgi.ini
+  when: APP_UWSGI_ONDEMAND == False and APP_PYTHON3 == False
+
+
+- set_fact:
+    UWSGI_INI_FILE=uwsgi_ondemand.ini
+  when: APP_UWSGI_ONDEMAND == True and APP_PYTHON3 == False
+
+
+- set_fact:
+    UWSGI_INI_FILE=uwsgi3.ini
+  when: APP_UWSGI_ONDEMAND == False and APP_PYTHON3 == True
+
+
+- set_fact:
+    UWSGI_INI_FILE=uwsgi_ondemand3.ini
+  when: APP_UWSGI_ONDEMAND == True and APP_PYTHON3 == True
+
+
+- name: "copy configuration... {{ UWSGI_INI_FILE }}, vars.ini"
+  template:
+    src=conf/{{ item }}.j2 dest={{ APP_PATH }}/{{ item }}
+    owner=www-data
+    group=www-data
+    mode=0600
+  with_items:
+    - "{{ UWSGI_INI_FILE }}"
+    - vars.ini
+  tags: config

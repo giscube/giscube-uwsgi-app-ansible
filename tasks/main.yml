@@ -1,0 +1,10 @@
+---
+
+- name: Required for ansible database
+  apt: name={{ item }} state=latest
+  with_items:
+    - python-psycopg2
+
+- include: db.yml
+
+- include: app.yml

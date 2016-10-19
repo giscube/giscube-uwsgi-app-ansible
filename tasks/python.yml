@@ -1,0 +1,30 @@
+---
+
+- name: Create virtualenv python 2.7
+  pip:
+      virtualenv={{ APP_PATH }}/venv
+      name=pip
+      state=latest
+  become: true
+  become_user: www-data
+  when: APP_PYTHON3 == False
+
+- name: Create virtualenv python 3.4
+  pip:
+      virtualenv_command="pyvenv-3.4"
+      virtualenv={{ APP_PATH }}/venv
+      name=pip
+      state=latest
+  become: true
+  become_user: www-data
+  when: ansible_distribution == 'Ubuntu' and ansible_distribution_release == 'trusty' and APP_PYTHON3 == True
+
+- name: Create virtualenv python 3.5
+  pip:
+      virtualenv_command="pyvenv-3.5"
+      virtualenv={{ APP_PATH }}/venv
+      name=pip
+      state=latest
+  become: true
+  become_user: www-data
+  when: ansible_distribution == 'Ubuntu' and ansible_distribution_release == 'xenial' and APP_PYTHON3 == True

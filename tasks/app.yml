@@ -1,0 +1,99 @@
+---
+
+- name: Create app directory
+  file:
+      path={{ APP_PATH }}
+      state=directory
+      mode=755
+      owner=www-data
+      group=www-data
+
+- name: Git checkout from public repo
+  git:
+    repo={{ APP_GIT_URL }}
+    dest={{ APP_PATH }}/src/
+    force=yes
+    version={{ APP_GIT_BRANCH }}
+  become: true
+  become_user: www-data
+  tags: code
+  when: APP_GIT_DEPLOY_KEY == ''
+
+
+- name: Git checkout from public private repo
+  git:
+    repo={{ APP_GIT_URL }}
+    dest={{ APP_PATH }}/src/
+    force=yes
+    version={{ APP_GIT_BRANCH }}
+    key_file={{ APP_GIT_DEPLOY_KEY }}
+  become: true
+  become_user: www-data
+  tags: code
+  when: APP_GIT_DEPLOY_KEY != ''
+
+- name: link source code to standar "app" dir
+  file: state=link owner=www-data group=www-data force=yes
+        src={{ APP_PATH }}/src/{{ APP_APP_FOLDER }}
+        dest={{ APP_PATH }}/app
+
+- name: copy template_vars.ini
+  copy:
+    src={{ APP_TEMPLATE_VARS_SRC }} dest={{ APP_PATH }}/template_vars.ini
+    owner=www-data group=www-data mode=0700
+  when: APP_TEMPLATE_VARS_SRC is defined and APP_TEMPLATE_VARS_SRC != ''
+
+- include: uwsgi.yml
+
+- name: copy vars.sh utility script
+  copy:
+    src=conf/vars.sh dest={{ APP_PATH }}/vars.sh
+    owner=www-data group=www-data mode=0700
+
+- include: python.yml
+
+- name: install app requirements.txt
+  pip: virtualenv={{ APP_PATH }}/venv
+       requirements={{ APP_PATH }}/app/{{ APP_REQUIREMENTS }}
+  become: true
+  become_user: www-data
+
+- name: run migrations
+  django_manage:
+    command: migrate
+    app_path: "{{ APP_PATH }}/app/"
+    virtualenv: "{{ APP_PATH }}/venv/"
+  environment:
+    DB_NAME: "{{ APP_DB_NAME }}"
+    DB_USER: "{{ APP_DB_USER }}"
+    DB_PASSWORD: "{{ APP_DB_PASSWORD }}"
+  become: true
+  become_user: www-data
+  tags: migrate
+
+
+# - name: "Load fixtures: {{ APP_LOAD_FIXTURE }}"
+#   django_manage:
+#     command: loaddata
+#         fixtures={{ APP_LOAD_FIXTURE }}
+#     app_path: "{{ APP_PATH }}/app/"
+#     virtualenv: "{{ APP_PATH }}/venv/"
+#   environment:
+#     DB_NAME: "{{ APP_DB_NAME }}"
+#     DB_USER: "{{ APP_DB_USER }}"
+#     DB_PASSWORD: "{{ APP_DB_PASSWORD }}"
+#     when: APP_LOAD_FIXTURE != ''
+
+- name: copy app static files
+  django_manage:
+    command: collectstatic
+    app_path: "{{ APP_PATH }}/app/"
+    virtualenv: "{{ APP_PATH }}/venv/"
+  environment:
+    STATIC_ROOT: "{{ APP_PATH }}/static/"
+  become: true
+  become_user: www-data
+
+- name: reload app
+  file: path={{ APP_PATH }}/{{ UWSGI_INI_FILE }} state=touch
+  tags: code, config

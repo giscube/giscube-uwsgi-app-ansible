@@ -1,0 +1,34 @@
+---
+APP_DEBUG: True
+APP_NAME: app_sample
+APP_PATH: /data/apps/app_sample
+APP_URL: /apps/app_sample
+APP_APP_FOLDER:
+APP_REQUIREMENTS: requirements.txt
+APP_GIT_URL: git@bitbucket.org:app_sample/app_sample.git
+APP_GIT_BRANCH: master
+# /data/config/ssh/git_deploy_key
+APP_GIT_DEPLOY_KEY:
+
+APP_DB_NAME: app_sample
+APP_DB_USER: app_sample
+APP_DB_PASSWORD: Wo0oW
+APP_DB_SCHEMA: public
+APP_DB_POSTGIS: True
+
+APP_DISABLE_SSL: True
+APP_ALLOWED_HOSTS:
+APP_LANGUAGE_CODE: en
+
+
+APP_USE_CAS: False
+APP_CAS_SERVER_URL:
+
+APP_PYTHON3: False
+APP_UWSGI_OLD: False
+APP_UWSGI_MODULE: wsgi
+APP_UWSGI_ONDEMAND: True
+
+# APP_TEMPLATE_VARS_SRC:
+APP_TEMPLATE_VARS: ../template_vars.ini
+APP_TEMPLATE_DIR:

@@ -1,0 +1,37 @@
+---
+
+- name: Create db
+  postgresql_db: name={{ APP_DB_NAME }}
+                 encoding='UTF-8'
+  become: yes
+  become_user: postgres
+
+
+- postgresql_ext: name=postgis db={{ APP_DB_NAME }}
+  become: yes
+  become_user: postgres
+  when: APP_DB_POSTGIS == True
+
+- postgresql_user:
+      db={{ APP_DB_NAME }}
+      name={{ APP_DB_USER }}
+      password={{ APP_DB_PASSWORD }}
+  become: yes
+  become_user: postgres
+
+
+- name: Create schema
+  command: psql -d {{ APP_DB_NAME }} -c "CREATE SCHEMA IF NOT EXISTS {{ APP_DB_SCHEMA }} AUTHORIZATION {{ APP_DB_USER }};"
+  become: yes
+  become_user: postgres
+  when: APP_DB_SCHEMA != ''
+
+
+- postgresql_privs: >
+    db={{ APP_DB_NAME }}
+    privs=ALL
+    type=database
+    role={{ APP_DB_USER }}
+  become: yes
+  become_user: postgres
+  when: APP_DB_SCHEMA == ''
