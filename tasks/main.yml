@@ -6,5 +6,6 @@
     - python-psycopg2
 
 - include: db.yml
+  when: APP_DB_CREATE == True
 
 - include: app.yml
