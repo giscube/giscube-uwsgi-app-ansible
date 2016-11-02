@@ -2,7 +2,7 @@
 procname-prefix-spaced=/apps/%c
 
 chdir = %d/app
-{% if APP_UWSGI_MODULE != '' %}
+{% if APP_UWSGI_OLD %}
 module = {{ APP_UWSGI_MODULE }}
 {% else %}
 mount = {{ APP_URL }}={{ APP_NAME }}/wsgi.py
