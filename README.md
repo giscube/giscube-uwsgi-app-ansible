@@ -1,1 +1,1 @@
-ansible==2.1.2.0
+Max ansible version 2.1.2.0
