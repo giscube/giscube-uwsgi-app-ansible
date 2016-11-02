@@ -10,11 +10,14 @@ APP_GIT_BRANCH: master
 # /data/config/ssh/git_deploy_key
 APP_GIT_DEPLOY_KEY:
 
+APP_DB_CREATE: True
 APP_DB_NAME: app_sample
 APP_DB_USER: app_sample
 APP_DB_PASSWORD: Wo0oW
 APP_DB_SCHEMA: public
 APP_DB_POSTGIS: True
+APP_DB_HOSTNAME: 127.0.0.1
+APP_DB_PORT: 5432
 
 APP_DISABLE_SSL: True
 APP_ALLOWED_HOSTS:
