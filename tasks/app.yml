@@ -52,9 +52,10 @@
 
 - include: python.yml
 
-- name: install app requirements.txt
-  pip: virtualenv={{ APP_PATH }}/venv
-       requirements={{ APP_PATH }}/app/{{ APP_REQUIREMENTS }}
+- name: "install app requirements from {{ APP_PATH }}/app/{{ APP_REQUIREMENTS }}"
+  pip:
+    virtualenv={{ APP_PATH }}/venv
+    requirements={{ APP_PATH }}/app/{{ APP_REQUIREMENTS }}
   become: true
   become_user: www-data
 
