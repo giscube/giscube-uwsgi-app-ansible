@@ -43,6 +43,11 @@
     owner=www-data group=www-data mode=0700
   when: APP_TEMPLATE_VARS_SRC is defined and APP_TEMPLATE_VARS_SRC != ''
 
+- name: Set APP_ENVIRONMENT_NAME if not defined
+  set_fact:
+     APP_ENVIRONMENT_NAME: "{{ APP_NAME }}"
+  when: APP_ENVIRONMENT_NAME is not defined or APP_ENVIRONMENT_NAME == ''
+
 - include: uwsgi.yml
 
 - name: copy vars.sh utility script
@@ -68,6 +73,7 @@
     DB_NAME: "{{ APP_DB_NAME }}"
     DB_USER: "{{ APP_DB_USER }}"
     DB_PASSWORD: "{{ APP_DB_PASSWORD }}"
+    ENVIRONMENT_NAME: "{{ APP_ENVIRONMENT_NAME }}"
   become: true
   become_user: www-data
   tags: migrate

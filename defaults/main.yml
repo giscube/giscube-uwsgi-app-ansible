@@ -1,4 +1,5 @@
 ---
+# ENVIRONMENT_NAME: # default APP_NAME
 APP_DEBUG: True
 APP_NAME: app_sample
 APP_PATH: /data/apps/app_sample
