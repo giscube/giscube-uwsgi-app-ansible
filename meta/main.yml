@@ -1,0 +1,14 @@
+---
+dependencies: []
+
+galaxy_info:
+  author: abusquets
+  description: Giscube base role for deploy uwsgi apps
+  company: "Giscube"
+  license: "license (BSD, MIT)"
+  min_ansible_version: 2.1
+  platforms:
+  - name: Ubuntu
+    versions:
+    - trusty
+    - xenial
