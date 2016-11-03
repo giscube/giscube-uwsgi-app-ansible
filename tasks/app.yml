@@ -52,10 +52,10 @@
 
 - include: python.yml
 
-- name: "install app requirements from {{ APP_PATH }}/app/{{ APP_REQUIREMENTS }}"
+- name: "install app requirements from {{ APP_PATH }}/src/{{ APP_REQUIREMENTS }}"
   pip:
     virtualenv={{ APP_PATH }}/venv
-    requirements={{ APP_PATH }}/app/{{ APP_REQUIREMENTS }}
+    requirements={{ APP_PATH }}/src/{{ APP_REQUIREMENTS }}
   become: true
   become_user: www-data
 
