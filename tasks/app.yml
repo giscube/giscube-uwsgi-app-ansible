@@ -78,18 +78,22 @@
   become_user: www-data
   tags: migrate
 
+- name: "Load fixtures: {{ APP_LOAD_FIXTURES }}"
+  django_manage:
+    command: loaddata
+    app_path: "{{ APP_PATH }}/app/"
+    virtualenv: "{{ APP_PATH }}/venv/"
+    fixtures: "{{ APP_LOAD_FIXTURES }}"
+  environment:
+    DB_NAME: "{{ APP_DB_NAME }}"
+    DB_USER: "{{ APP_DB_USER }}"
+    DB_PASSWORD: "{{ APP_DB_PASSWORD }}"
+    ENVIRONMENT_NAME: "{{ APP_ENVIRONMENT_NAME }}"
+  become: true
+  become_user: www-data
+  tags: loaddata
+  when: "'{{ APP_LOAD_FIXTURES }}'!=''"
 
-# - name: "Load fixtures: {{ APP_LOAD_FIXTURE }}"
-#   django_manage:
-#     command: loaddata
-#         fixtures={{ APP_LOAD_FIXTURE }}
-#     app_path: "{{ APP_PATH }}/app/"
-#     virtualenv: "{{ APP_PATH }}/venv/"
-#   environment:
-#     DB_NAME: "{{ APP_DB_NAME }}"
-#     DB_USER: "{{ APP_DB_USER }}"
-#     DB_PASSWORD: "{{ APP_DB_PASSWORD }}"
-#     when: APP_LOAD_FIXTURE != ''
 
 - name: copy app static files
   django_manage:
