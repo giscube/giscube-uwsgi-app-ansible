@@ -5,10 +5,15 @@ chdir = %d/app
 {% if APP_UWSGI_OLD %}
 module = {{ APP_UWSGI_MODULE }}
 {% else %}
+{% if APP_UWSGI_MODULE == 'wsgi' %}
 mount = {{ APP_URL }}={{ APP_NAME }}/wsgi.py
+{% else %}
+mount = {{ APP_URL }}={{ APP_UWSGI_MODULE }}
+{% endif %}
 manage-script-name = true
 needs-app = true
 {% endif %}
+
 touch-reload = %d/uwsgi_ondemand.ini
 
 # set enviroment variables from ini file.
