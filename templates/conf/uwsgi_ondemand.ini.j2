@@ -52,3 +52,8 @@ auto-procname = true
 no-orphans = true
 vacuum = true
 die-on-term = true
+
+
+{% for key, val in UWSGI_EXTRA_VARS.iteritems() %}
+{{ key }} = {{ val }}
+{% endfor %}
