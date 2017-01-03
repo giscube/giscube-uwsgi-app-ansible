@@ -22,6 +22,8 @@ TEMPLATE_VARS={{ APP_TEMPLATE_VARS }}
 {% if APP_TEMPLATE_DIR is defined and APP_TEMPLATE_DIR != '' %}
 TEMPLATE_DIR={{ APP_TEMPLATE_DIR }}
 {% endif %}
+{% if APP_EXTRA_VARS is defined %}
 {% for key, val in APP_EXTRA_VARS.iteritems() %}
 {{ key }}={{ val }}
 {% endfor %}
+{% endif %}

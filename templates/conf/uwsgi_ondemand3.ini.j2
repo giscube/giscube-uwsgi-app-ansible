@@ -53,6 +53,8 @@ no-orphans = true
 vacuum = true
 die-on-term = true
 
+{% if UWSGI_EXTRA_VARS is defined %}
 {% for key, val in UWSGI_EXTRA_VARS.iteritems() %}
 {{ key }} = {{ val }}
 {% endfor %}
+{% endif %}
