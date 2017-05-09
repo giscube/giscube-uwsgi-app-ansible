@@ -77,6 +77,8 @@
     DB_NAME: "{{ APP_DB_NAME }}"
     DB_USER: "{{ APP_DB_USER }}"
     DB_PASSWORD: "{{ APP_DB_PASSWORD }}"
+    DB_HOSTNAME: "{{ APP_DB_HOSTNAME }}"
+    DB_PORT: "{{ APP_DB_PORT }}"
     ENVIRONMENT_NAME: "{{ APP_ENVIRONMENT_NAME }}"
   become: true
   become_user: www-data
