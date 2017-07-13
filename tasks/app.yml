@@ -41,7 +41,7 @@
   copy:
     src={{ APP_TEMPLATE_VARS_SRC }} dest={{ APP_PATH }}/template_vars.ini
     owner=www-data group=www-data mode=0700
-  when: APP_TEMPLATE_VARS_SRC is defined and APP_TEMPLATE_VARS_SRC != ''
+  when: APP_TEMPLATE_VARS_SRC is defined and APP_TEMPLATE_VARS_SRC != '' and  APP_DJANGO == True
 
 - name: Set APP_ENVIRONMENT_NAME if not defined
   set_fact:
@@ -80,6 +80,7 @@
     DB_HOSTNAME: "{{ APP_DB_HOSTNAME }}"
     DB_PORT: "{{ APP_DB_PORT }}"
     ENVIRONMENT_NAME: "{{ APP_ENVIRONMENT_NAME }}"
+  when: APP_DJANGO == True
   become: true
   become_user: www-data
   tags: migrate
@@ -95,6 +96,7 @@
     DB_USER: "{{ APP_DB_USER }}"
     DB_PASSWORD: "{{ APP_DB_PASSWORD }}"
     ENVIRONMENT_NAME: "{{ APP_ENVIRONMENT_NAME }}"
+  when: APP_DJANGO == True
   become: true
   become_user: www-data
   tags: loaddata
@@ -108,6 +110,7 @@
     virtualenv: "{{ APP_PATH }}/venv/"
   environment:
     STATIC_ROOT: "{{ APP_PATH }}/static/"
+  when: APP_DJANGO == True
   become: true
   become_user: www-data
 

@@ -1,5 +1,8 @@
 ---
 # ENVIRONMENT_NAME: # default APP_NAME
+
+APP_DJANGO: True
+
 APP_DEBUG: True
 APP_NAME: app_sample
 APP_PATH: /data/apps/app_sample
@@ -10,6 +13,7 @@ APP_GIT_URL: git@bitbucket.org:app_sample/app_sample.git
 APP_GIT_BRANCH: master
 # /data/config/ssh/git_deploy_key
 APP_GIT_DEPLOY_KEY:
+
 
 APP_DB_CREATE: True
 APP_DB_NAME: app_sample
@@ -32,6 +36,7 @@ APP_PYTHON3: False
 APP_UWSGI_OLD: False
 APP_UWSGI_MODULE: wsgi
 APP_UWSGI_ONDEMAND: True
+# UWSGI_INI_FILE: uwsgi_ondemand.ini
 
 # APP_TEMPLATE_VARS_SRC:
 APP_TEMPLATE_VARS: ../template_vars.ini
