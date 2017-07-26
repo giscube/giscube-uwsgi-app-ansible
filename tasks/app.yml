@@ -67,6 +67,7 @@
 - file:
     path: "{{ APP_PATH }}/app/manage.py"
     mode: 0755
+  when: APP_DJANGO == True
 
 - name: run migrations
   django_manage:
