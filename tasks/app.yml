@@ -33,6 +33,25 @@
 
 - include: uwsgi.yml
 
+# this is also done on uwsgi.pre.sh, but it makes migration easier 
+- name: check if previous uwsgi.sock file exists
+  stat:
+    path: "{{ APP_PATH }}/uwsgi.sock"
+  register: uwsgisock
+
+- name: delete uwsgi.sock if it is not a link
+  file:
+    path: "{{ APP_PATH }}/uwsgi.sock"
+    state: absent
+  when: uwsgisock.stat.islnk is defined and uwsgisock.stat.islnk == False
+
+- name: create uwsgi.sock link if it does not exists
+  file:
+    src: "run/uwsgi.sock"
+    dest: "{{ APP_PATH }}/uwsgi.sock"
+    state: link
+  when: uwsgisock.stat.islnk is not defined or uwsgisock.stat.islnk == False
+
 - name: copy vars.sh utility script
   copy:
     src=conf/vars.sh dest={{ APP_PATH }}/vars.sh
