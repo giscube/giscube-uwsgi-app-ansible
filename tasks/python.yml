@@ -2,6 +2,7 @@
 
 - name: Create virtualenv python 2.7
   pip:
+      virtualenv_python=python2.7
       virtualenv={{ APP_PATH }}/venv
       name=pip
       state=latest
