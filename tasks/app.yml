@@ -97,11 +97,10 @@
     DB_USER: "{{ APP_DB_USER }}"
     DB_PASSWORD: "{{ APP_DB_PASSWORD }}"
     ENVIRONMENT_NAME: "{{ APP_ENVIRONMENT_NAME }}"
-  when: APP_DJANGO == True
   become: true
   become_user: www-data
   tags: loaddata
-  when: "'{{ APP_LOAD_FIXTURES }}'!=''"
+  when: "(APP_DJANGO == True) and (APP_LOAD_FIXTURES is not none) and (APP_LOAD_FIXTURES != '')"
 
 
 - name: copy app static files
