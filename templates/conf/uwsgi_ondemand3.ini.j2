@@ -28,6 +28,9 @@ venv = %d/venv
 # must not create the socket in ondemand mode
 # socket = %d/uwsgi.sock
 
+exec-as-root = chown www-data:www-data %d/run/uwsgi.sock
+exec-as-root = chmod 600 %d/run/uwsgi.sock
+
 workers = 1
 threads = 5
 max-requests = 1000
@@ -37,8 +40,9 @@ idle = 10
 die-on-idle = true
 
 # logging
-logto = %d/log.log
+logto = %d/run/log.log
 log-date = true
+logfile-chmod = 600
 logfile-chown = true
 
 # system
@@ -47,7 +51,6 @@ gid = www-data
 buffer-size = 32768
 master = true
 chmod = 660
-reload-os-env = true
 auto-procname = true
 no-orphans = true
 vacuum = true

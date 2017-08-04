@@ -5,42 +5,25 @@
       path={{ APP_PATH }}
       state=directory
       mode=755
-      owner=www-data
-      group=www-data
+      owner=root
+      group=root
 
-- name: Git checkout from public repo
-  git:
-    repo={{ APP_GIT_URL }}
-    dest={{ APP_PATH }}/src/
-    force=yes
-    version={{ APP_GIT_BRANCH }}
-  become: true
-  become_user: www-data
-  tags: code
-  when: APP_GIT_DEPLOY_KEY == ''
+- include: app-src-checkout.yml
+#  when: APP_CODE_PATH | trim == ''
+  when: (APP_CODE_PATH is none) or (APP_CODE_PATH | trim == '')
 
-
-- name: Git checkout from public private repo
-  git:
-    repo={{ APP_GIT_URL }}
-    dest={{ APP_PATH }}/src/
-    force=yes
-    version={{ APP_GIT_BRANCH }}
-    key_file={{ APP_GIT_DEPLOY_KEY }}
-  become: true
-  become_user: www-data
-  tags: code
-  when: APP_GIT_DEPLOY_KEY != ''
+- include: app-src-link.yml
+  when: not((APP_CODE_PATH is none) or (APP_CODE_PATH | trim == ''))
 
 - name: link source code to standar "app" dir
-  file: state=link owner=www-data group=www-data force=yes
+  file: state=link owner=root group=root force=yes
         src={{ APP_PATH }}/src/{{ APP_APP_FOLDER }}
         dest={{ APP_PATH }}/app
 
 - name: copy template_vars.ini
   copy:
     src={{ APP_TEMPLATE_VARS_SRC }} dest={{ APP_PATH }}/template_vars.ini
-    owner=www-data group=www-data mode=0700
+    owner=root group=root mode=0700
   when: APP_TEMPLATE_VARS_SRC is defined and APP_TEMPLATE_VARS_SRC != '' and  APP_DJANGO == True
 
 - name: Set APP_ENVIRONMENT_NAME if not defined
@@ -53,7 +36,17 @@
 - name: copy vars.sh utility script
   copy:
     src=conf/vars.sh dest={{ APP_PATH }}/vars.sh
-    owner=www-data group=www-data mode=0700
+    owner=root group=root mode=0700
+
+- name: copy uwsgi.pre.sh utility script
+  copy:
+    src=conf/uwsgi.pre.sh dest={{ APP_PATH }}/uwsgi.pre.sh
+    owner=root group=root mode=0700
+
+- name: copy env.sh utility script
+  copy:
+    src=conf/env.sh dest={{ APP_PATH }}/env.sh
+    owner=root group=root mode=0600
 
 - include: python.yml
 
@@ -62,7 +55,7 @@
     virtualenv={{ APP_PATH }}/venv
     requirements={{ APP_PATH }}/src/{{ APP_REQUIREMENTS }}
   become: true
-  become_user: www-data
+  become_user: "{{ APP_DEPLOY_USER }}"
 
 - file:
     path: "{{ APP_PATH }}/app/manage.py"
@@ -102,6 +95,13 @@
   tags: loaddata
   when: "(APP_DJANGO == True) and (APP_LOAD_FIXTURES is not none) and (APP_LOAD_FIXTURES != '')"
 
+- name: Create app/static directory
+  file:
+      path={{ APP_PATH }}/static
+      state=directory
+      mode=750
+      owner=www-data
+      group=www-data
 
 - name: copy app static files
   django_manage:
@@ -109,6 +109,12 @@
     app_path: "{{ APP_PATH }}/app/"
     virtualenv: "{{ APP_PATH }}/venv/"
   environment:
+    DB_NAME: "{{ APP_DB_NAME }}"
+    DB_USER: "{{ APP_DB_USER }}"
+    DB_PASSWORD: "{{ APP_DB_PASSWORD }}"
+    DB_HOSTNAME: "{{ APP_DB_HOSTNAME }}"
+    DB_PORT: "{{ APP_DB_PORT }}"
+    ENVIRONMENT_NAME: "{{ APP_ENVIRONMENT_NAME }}"
     STATIC_ROOT: "{{ APP_PATH }}/static/"
   when: APP_DJANGO == True
   become: true
