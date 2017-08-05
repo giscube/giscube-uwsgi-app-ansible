@@ -17,8 +17,8 @@
 
 - name: link source code to standar "app" dir
   file: state=link owner=root group=root force=yes
-        src={{ APP_PATH }}/src/{{ APP_APP_FOLDER }}
-        dest={{ APP_PATH }}/app
+        src="src/{{ APP_APP_FOLDER }}"
+        dest="{{ APP_PATH }}/app"
 
 - name: copy template_vars.ini
   copy:
