@@ -50,6 +50,7 @@
     src: "run/uwsgi.sock"
     dest: "{{ APP_PATH }}/uwsgi.sock"
     state: link
+    force: yes
   when: uwsgisock.stat.islnk is not defined or uwsgisock.stat.islnk == False
 
 - name: copy vars.sh utility script
