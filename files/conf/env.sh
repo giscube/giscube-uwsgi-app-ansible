@@ -1,6 +1,15 @@
 #! /bin/sh
 
 # activate virtualenv if present
-test -e venv && . venv/bin/activate
+if [ -e venv ]
+then
+    echo "Activating virtualenv"
+    . venv/bin/activate
+fi
+
 # import configuration if present
-test -e vars.sh && . vars.sh
+if [ -e vars.sh ]
+then
+    echo "Exporting vars.ini"
+    . vars.sh
+fi
