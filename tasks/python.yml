@@ -20,7 +20,7 @@
 
 - name: Create virtualenv python 3.4
   pip:
-      virtualenv_command="pyvenv-3.4"
+      virtualenv_python=python3.4
       virtualenv={{ APP_PATH }}/venv
       name=pip
       state=latest
@@ -30,7 +30,7 @@
 
 - name: Create virtualenv python 3.5
   pip:
-      virtualenv_command="pyvenv-3.5"
+      virtualenv_python=python3.5
       virtualenv={{ APP_PATH }}/venv
       name=pip
       state=latest
