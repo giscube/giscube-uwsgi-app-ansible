@@ -1,6 +1,6 @@
 ---
 
-- name: Create app directory
+- name: "Create app directory {{ APP_PATH }}"
   file:
       path={{ APP_PATH }}
       state=directory
@@ -8,11 +8,13 @@
       owner=root
       group=root
 
-- include: app-src-checkout.yml
+- name: Application code checkout
+  include: app-src-checkout.yml
 #  when: APP_CODE_PATH | trim == ''
   when: (APP_CODE_PATH is none) or (APP_CODE_PATH | trim == '')
 
-- include: app-src-link.yml
+- name: Application code linking
+  include: app-src-link.yml
   when: not((APP_CODE_PATH is none) or (APP_CODE_PATH | trim == ''))
 
 - name: link source code to standar "app" dir
@@ -31,7 +33,8 @@
      APP_ENVIRONMENT_NAME: "{{ APP_NAME }}"
   when: APP_ENVIRONMENT_NAME is not defined or APP_ENVIRONMENT_NAME == ''
 
-- include: uwsgi.yml
+- name: uWSGI configuration
+  include: uwsgi.yml
 
 # this is also done on uwsgi.pre.sh, but it makes migration easier 
 - name: check if previous uwsgi.sock file exists
@@ -68,7 +71,8 @@
     src=conf/env.sh dest={{ APP_PATH }}/env.sh
     owner=root group=root mode=0600
 
-- include: python.yml
+- name: Virtualenv creation
+  include: python.yml
 
 # requirements
 - name: check if {{ APP_REQUIREMENTS }} file exists
