@@ -70,12 +70,20 @@
 
 - include: python.yml
 
+# requirements
+- name: check if {{ APP_REQUIREMENTS }} file exists
+  stat:
+    path: "{{ APP_PATH }}/src/{{ APP_REQUIREMENTS }}"
+  register: requirements
+
 - name: "install app requirements from {{ APP_PATH }}/src/{{ APP_REQUIREMENTS }}"
   pip:
     virtualenv={{ APP_PATH }}/venv
     requirements={{ APP_PATH }}/src/{{ APP_REQUIREMENTS }}
+  when: requirements.stat.islnk is defined
   become: true
   become_user: "{{ APP_DEPLOY_USER }}"
+# /requirements
 
 - file:
     path: "{{ APP_PATH }}/app/manage.py"
