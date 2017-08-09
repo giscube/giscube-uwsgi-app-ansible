@@ -5,3 +5,4 @@
     src: "{{ APP_CODE_PATH }}"
     dest: "{{ APP_PATH }}/src"
     state: link
+    force: yes
