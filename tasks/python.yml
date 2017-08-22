@@ -8,32 +8,19 @@
       owner="{{ APP_DEPLOY_USER }}"
       group=www-data
 
-- name: Create virtualenv python 2.7
+- name: Create virtualenv python {{ APP_PYTHON3 | ternary('3', '2.7') }}
   pip:
-      virtualenv_python=python2.7
+      virtualenv_python=python{{ APP_PYTHON3 | ternary('3', '2.7') }}
       virtualenv={{ APP_PATH }}/venv
       name=pip
       state=latest
   become: true
   become_user: "{{ APP_DEPLOY_USER }}"
-  when: APP_PYTHON3 == False
 
-- name: Create virtualenv python 3.4
-  pip:
-      virtualenv_python=python3.4
-      virtualenv={{ APP_PATH }}/venv
-      name=pip
-      state=latest
-  become: true
-  become_user: "{{ APP_DEPLOY_USER }}"
-  when: ansible_distribution == 'Ubuntu' and ansible_distribution_release == 'trusty' and APP_PYTHON3 == True
-
-- name: Create virtualenv python 3.5
-  pip:
-      virtualenv_python=python3.5
-      virtualenv={{ APP_PATH }}/venv
-      name=pip
-      state=latest
-  become: true
-  become_user: "{{ APP_DEPLOY_USER }}"
-  when: ansible_distribution == 'Ubuntu' and ansible_distribution_release == 'xenial' and APP_PYTHON3 == True
+# alternative with with_first_found
+# - include: "{{ item }}"
+#   with_first_found:
+#     - files:
+#         - default-{{ APP_PYTHON3 | ternary('python3', 'python2') }}.yml
+#       paths:
+#         - virtualenv/
