@@ -1,28 +1,8 @@
 ---
 
-- name: Always running app on Python 2
+- name: uWSGI configuration file
   set_fact:
-      UWSGI_INI_FILE=uwsgi.ini
-  when: APP_UWSGI_ONDEMAND == False and APP_PYTHON3 == False
-
-
-- name: Ondemand app on Python 2
-  set_fact:
-    UWSGI_INI_FILE=uwsgi_ondemand.ini
-  when: APP_UWSGI_ONDEMAND == True and APP_PYTHON3 == False
-
-
-- name: Always running app on Python 3
-  set_fact:
-    UWSGI_INI_FILE=uwsgi3.ini
-  when: APP_UWSGI_ONDEMAND == False and APP_PYTHON3 == True
-
-
-- name: Ondemand app on Python 3
-  set_fact:
-    UWSGI_INI_FILE=uwsgi_ondemand3.ini
-  when: APP_UWSGI_ONDEMAND == True and APP_PYTHON3 == True
-
+      UWSGI_INI_FILE=uwsgi{{ APP_UWSGI_ONDEMAND | ternary('_ondemand', '') }}{{ APP_PYTHON3 | ternary('3', '') }}.ini
 
 - name: "copy configuration... {{ UWSGI_INI_FILE }}, vars.ini"
   template:
