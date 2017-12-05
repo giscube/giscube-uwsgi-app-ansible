@@ -4,6 +4,7 @@
 APP_DJANGO: True
 
 APP_DEBUG: True
+APP_SECRET_KEY:
 APP_NAME: app_sample
 APP_PATH: /data/apps/app_sample
 APP_URL: /apps/app_sample
