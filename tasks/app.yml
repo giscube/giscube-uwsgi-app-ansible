@@ -33,6 +33,12 @@
      APP_ENVIRONMENT_NAME: "{{ APP_NAME }}"
   when: APP_ENVIRONMENT_NAME is not defined or APP_ENVIRONMENT_NAME == ''
 
+# script must be available before copying uwsgi configuration
+- name: copy uwsgi.pre.sh utility script
+  copy:
+    src=conf/uwsgi.pre.sh dest={{ APP_PATH }}/uwsgi.pre.sh
+    owner=root group=root mode=0700
+
 - name: uWSGI configuration
   include: uwsgi.yml
 
@@ -59,11 +65,6 @@
 - name: copy vars.sh utility script
   copy:
     src=conf/vars.sh dest={{ APP_PATH }}/vars.sh
-    owner=root group=root mode=0700
-
-- name: copy uwsgi.pre.sh utility script
-  copy:
-    src=conf/uwsgi.pre.sh dest={{ APP_PATH }}/uwsgi.pre.sh
     owner=root group=root mode=0700
 
 - name: copy env.sh utility script
