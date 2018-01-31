@@ -19,6 +19,7 @@ APP_DEPLOY_USER: www-data
 
 
 APP_DB_CREATE: True
+APP_RUN_MIGRATIONS: True
 APP_DB_NAME: app_sample
 APP_DB_USER: app_sample
 APP_DB_PASSWORD: Wo0oW

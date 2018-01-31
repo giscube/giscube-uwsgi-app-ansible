@@ -108,7 +108,7 @@
     DB_HOSTNAME: "{{ APP_DB_HOSTNAME }}"
     DB_PORT: "{{ APP_DB_PORT }}"
     ENVIRONMENT_NAME: "{{ APP_ENVIRONMENT_NAME }}"
-  when: APP_DJANGO == True
+  when: APP_DJANGO == True and APP_RUN_MIGRATIONS == True
   become: true
   become_user: www-data
   tags: migrate
