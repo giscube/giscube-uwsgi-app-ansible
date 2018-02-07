@@ -23,7 +23,10 @@
 
 
 - name: "Create {{ APP_DB_SCHEMA }} schema"
-  command: psql -d {{ APP_DB_NAME }} -c "CREATE SCHEMA IF NOT EXISTS {{ APP_DB_SCHEMA }} AUTHORIZATION {{ APP_DB_USER }};"
+  postgresql_schema:
+    database: "{{ APP_DB_NAME }}"
+    name: "{{ APP_DB_SCHEMA }}"
+    owner: "{{ APP_DB_USER }}"
   become: yes
   become_user: postgres
   when: APP_DB_SCHEMA != ''
