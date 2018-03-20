@@ -105,7 +105,9 @@
     DB_NAME: "{{ APP_DB_NAME }}"
     DB_USER: "{{ APP_DB_USER }}"
     DB_PASSWORD: "{{ APP_DB_PASSWORD }}"
+    # Deprecated, use DB_HOST
     DB_HOSTNAME: "{{ APP_DB_HOSTNAME }}"
+    DB_HOST: "{{ APP_DB_HOST }}"
     DB_PORT: "{{ APP_DB_PORT }}"
     ENVIRONMENT_NAME: "{{ APP_ENVIRONMENT_NAME }}"
   when: APP_DJANGO == True and APP_RUN_MIGRATIONS == True
