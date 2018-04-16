@@ -65,12 +65,12 @@
 - name: copy vars.sh utility script
   copy:
     src=conf/vars.sh dest={{ APP_PATH }}/vars.sh
-    owner=root group=root mode=0700
+    owner=root group=root mode=0755
 
 - name: copy env.sh utility script
   copy:
     src=conf/env.sh dest={{ APP_PATH }}/env.sh
-    owner=root group=root mode=0600
+    owner=root group=root mode=0644
 
 - name: Virtualenv creation
   include: python.yml
