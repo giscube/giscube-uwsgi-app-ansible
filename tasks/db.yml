@@ -17,7 +17,8 @@
   postgresql_user:
       db={{ APP_DB_NAME }}
       name={{ APP_DB_USER }}
-      password={{ APP_DB_PASSWORD }}
+      password={{ APP_DB_PASSWORD|hash('md5') }}
+      encrypted=yes
   become: yes
   become_user: postgres
 
