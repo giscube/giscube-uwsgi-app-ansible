@@ -1,11 +1,14 @@
-#! /bin/sh
-#
-# how can I turn config ini file into system environment in bash?
-#
-# credits: http://stackoverflow.com/a/22535251/593907
-#
-set -a               # turn on automatic export
-# source vars.ini      # execute all commands in the file
-# skip .ini section header
-source <(cat vars.ini | grep -v "^\[.*\]$")
-set +a               # turn off automatic export
+#!/bin/bash
+if [ "$(uname)" == "Darwin" ]; then
+  SED="sed -E"
+else
+  SED="sed -r"
+fi
+
+eval $(
+  cat "./vars.ini" | grep '^\w.*=' | while read -r line; do
+    echo $line |
+    $SED 's/'"'"'/'"'\"'\"'"'/g' |  # escape single quotes (s/'/'"'"'/g but scaped correctly)
+    $SED 's/^(.+)=(.*)$/export'" '\1'='\2'/"
+  done
+)
