@@ -21,6 +21,7 @@
   file: state=link owner=root group=root force=yes
         src="src/{{ APP_APP_FOLDER }}"
         dest="{{ APP_PATH }}/app"
+        follow="false"  # needed to set permissions to dest (link) and not src path
 
 - name: copy template_vars.ini
   copy:
