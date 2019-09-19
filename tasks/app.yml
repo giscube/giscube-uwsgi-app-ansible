@@ -97,21 +97,29 @@
     mode: 0755
   when: APP_DJANGO == True
 
+- set_fact:
+      default_app_environment:
+        SECRET_KEY: "{{ APP_SECRET_KEY }}"
+        DB_NAME: "{{ APP_DB_NAME }}"
+        DB_USER: "{{ APP_DB_USER }}"
+        DB_PASSWORD: "{{ APP_DB_PASSWORD }}"
+        # Deprecated, use DB_HOST
+        DB_HOSTNAME: "{{ APP_DB_HOSTNAME }}"
+        DB_HOST: "{{ APP_DB_HOST }}"
+        DB_PORT: "{{ APP_DB_PORT }}"
+        ENVIRONMENT_NAME: "{{ APP_ENVIRONMENT_NAME }}"
+        STATIC_ROOT: "{{ APP_PATH }}/static/"
+
+- set_fact:
+      app_environment: "{{ default_app_environment | combine(APP_EXTRA_VARS) }}"
+
+
 - name: run migrations
   django_manage:
     command: migrate
     app_path: "{{ APP_PATH }}/app/"
     virtualenv: "{{ APP_PATH }}/venv/"
-  environment:
-    SECRET_KEY: "{{ APP_SECRET_KEY }}"
-    DB_NAME: "{{ APP_DB_NAME }}"
-    DB_USER: "{{ APP_DB_USER }}"
-    DB_PASSWORD: "{{ APP_DB_PASSWORD }}"
-    # Deprecated, use DB_HOST
-    DB_HOSTNAME: "{{ APP_DB_HOSTNAME }}"
-    DB_HOST: "{{ APP_DB_HOST }}"
-    DB_PORT: "{{ APP_DB_PORT }}"
-    ENVIRONMENT_NAME: "{{ APP_ENVIRONMENT_NAME }}"
+  environment: "{{ app_environment }}"
   when: APP_DJANGO == True and APP_RUN_MIGRATIONS == True
   become: true
   become_user: www-data
@@ -123,12 +131,7 @@
     app_path: "{{ APP_PATH }}/app/"
     virtualenv: "{{ APP_PATH }}/venv/"
     fixtures: "{{ APP_LOAD_FIXTURES }}"
-  environment:
-    SECRET_KEY: "{{ APP_SECRET_KEY }}"
-    DB_NAME: "{{ APP_DB_NAME }}"
-    DB_USER: "{{ APP_DB_USER }}"
-    DB_PASSWORD: "{{ APP_DB_PASSWORD }}"
-    ENVIRONMENT_NAME: "{{ APP_ENVIRONMENT_NAME }}"
+  environment: "{{ app_environment }}"
   become: true
   become_user: www-data
   tags: loaddata
@@ -147,17 +150,7 @@
     command: collectstatic
     app_path: "{{ APP_PATH }}/app/"
     virtualenv: "{{ APP_PATH }}/venv/"
-  environment:
-    SECRET_KEY: "{{ APP_SECRET_KEY }}"
-    DB_NAME: "{{ APP_DB_NAME }}"
-    DB_USER: "{{ APP_DB_USER }}"
-    DB_PASSWORD: "{{ APP_DB_PASSWORD }}"
-    # Deprecated, use DB_HOST
-    DB_HOSTNAME: "{{ APP_DB_HOSTNAME }}"
-    DB_HOST: "{{ APP_DB_HOST }}"
-    DB_PORT: "{{ APP_DB_PORT }}"
-    ENVIRONMENT_NAME: "{{ APP_ENVIRONMENT_NAME }}"
-    STATIC_ROOT: "{{ APP_PATH }}/static/"
+  environment: "{{ app_environment }}"
   when: APP_DJANGO == True
   become: true
   become_user: www-data
