@@ -1,9 +1,10 @@
 ---
 
 - name: Required for ansible database
-  apt: name={{ item }} state=latest
-  with_items:
+  apt:
+    name:
     - python-psycopg2
+    state: latest
 
 - include: db.yml
   when: APP_DB_CREATE == True and APP_DJANGO == True
