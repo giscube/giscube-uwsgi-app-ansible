@@ -8,9 +8,9 @@
       owner="{{ APP_DEPLOY_USER }}"
       group=www-data
 
-- name: Create virtualenv python {{ APP_PYTHON3 | ternary('3', '2.7') }}
+- name: Create virtualenv python {{ APP_PYTHON_VERSION | ternary(APP_PYTHON_VERSION, APP_PYTHON3 | ternary('3', '2.7')) }}
   pip:
-      virtualenv_python=python{{ APP_PYTHON3 | ternary('3', '2.7') }}
+      virtualenv_python=python{{ APP_PYTHON_VERSION | ternary(APP_PYTHON_VERSION, APP_PYTHON3 | ternary('3', '2.7')) }}
       virtualenv={{ APP_PATH }}/venv
       name=pip
       state=latest
