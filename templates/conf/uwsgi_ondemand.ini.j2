@@ -1,4 +1,8 @@
 [uwsgi]
+{% if APP_PYTHON_VERSION %}
+plugin=python{{ APP_PYTHON_VERSION | replace('.','') }}
+
+{% endif %}
 procname-prefix-spaced=/apps/%c
 
 chdir = %d/app
