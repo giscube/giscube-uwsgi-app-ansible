@@ -80,7 +80,8 @@
   become_user: "{{ APP_DEPLOY_USER }}"
 # /requirements
 
-- file:
+- name: make manage.py executable
+  file:
     path: "{{ APP_PATH }}/app/manage.py"
     mode: 0755
   when: APP_DJANGO == True
