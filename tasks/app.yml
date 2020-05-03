@@ -20,8 +20,8 @@
 # follow="false" needed to set permissions to dest (link) and not src path
 - name: link source code to standar "app" dir
   file: state=link owner=root group=root force=yes
-        src="src/{{ APP_APP_FOLDER }}"
-        dest="{{ APP_PATH }}/app"
+        src="src{{ APP_APP_FOLDER | ternary('/', '') }}{{ APP_APP_FOLDER }}"
+        dest="{{ APP_PATH }}{{ (APP_PATH[-1] == '/') | ternary('', '/') }}app"
         follow="false"
 
 - name: copy template_vars.ini
