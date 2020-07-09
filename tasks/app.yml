@@ -1,5 +1,16 @@
 ---
 
+- name: "Giscube app init"
+  command: giscube-app init "{{ APP_PATH }}" --deploy-user {{ APP_DEPLOY_USER }} --app-folder "{{ APP_APP_FOLDER }}"
+  changed_when: "giscube.rc > 0"
+  failed_when: "giscube.rc > 1"
+  register: giscube
+  when: giscube_app_mode|bool
+
+- debug: var=giscube
+  when: giscube_app_mode|bool
+
+# giscube-app
 - name: "Create app directory {{ APP_PATH }}"
   file:
       path={{ APP_PATH }}
@@ -7,6 +18,8 @@
       mode=755
       owner=root
       group=root
+  when: not giscube_app_mode|bool
+  tags: setup
 
 - name: Application code checkout
   include: app-src-checkout.yml
@@ -23,6 +36,8 @@
         src="src{{ APP_APP_FOLDER | ternary('/', '') }}{{ APP_APP_FOLDER }}"
         dest="{{ APP_PATH }}{{ (APP_PATH[-1] == '/') | ternary('', '/') }}app"
         follow="false"
+  when: not giscube_app_mode|bool
+  tags: setup
 
 - name: copy template_vars.ini
   copy:
@@ -35,14 +50,18 @@
      APP_ENVIRONMENT_NAME: "{{ APP_NAME }}"
   when: APP_ENVIRONMENT_NAME is not defined or APP_ENVIRONMENT_NAME == ''
 
+# giscube-app
 # script must be available before copying uwsgi configuration
 - name: copy uwsgi.pre.sh utility script
   copy:
     src=conf/uwsgi.pre.sh dest={{ APP_PATH }}/uwsgi.pre.sh
     owner=root group=root mode=0700
+  when: not giscube_app_mode|bool
+  tags: setup
 
 - name: uWSGI configuration
   include: uwsgi.yml
+  tags: config
 
 - name: create uwsgi.sock link if it does not exists
   file:
@@ -51,25 +70,34 @@
     state: link
     force: yes
   when: uwsgisock.stat.islnk is not defined or uwsgisock.stat.islnk == False
+  tags: setup
 
+# giscube-app
 - name: copy vars.sh utility script
   copy:
     src=conf/vars.sh dest={{ APP_PATH }}/vars.sh
     owner=root group=root mode=0755
+  when: not giscube_app_mode|bool
+  tags: setup
 
+# giscube-app
 - name: copy env.sh utility script
   copy:
     src=conf/env.sh dest={{ APP_PATH }}/env.sh
     owner=root group=root mode=0644
+  when: not giscube_app_mode|bool
+  tags: setup
 
 - name: Virtualenv creation
   include: python.yml
+  tags: setup
 
 # requirements
 - name: check if {{ APP_REQUIREMENTS }} file exists
   stat:
     path: "{{ APP_PATH }}/src/{{ APP_REQUIREMENTS }}"
   register: requirements
+  tags: requirements
 
 - name: "install app requirements from {{ APP_PATH }}/src/{{ APP_REQUIREMENTS }}"
   pip:
@@ -78,6 +106,7 @@
   when: requirements.stat.islnk is defined
   become: true
   become_user: "{{ APP_DEPLOY_USER }}"
+  tags: requirements
 # /requirements
 
 - name: make manage.py executable
@@ -85,6 +114,7 @@
     path: "{{ APP_PATH }}/app/manage.py"
     mode: 0755
   when: APP_DJANGO == True
+  tags: setup
 
 - set_fact:
       default_app_environment:
@@ -126,6 +156,7 @@
   tags: loaddata
   when: "(APP_DJANGO == True) and (APP_LOAD_FIXTURES is not none) and (APP_LOAD_FIXTURES != '')"
 
+# giscube-app
 - name: Create app/static directory
   file:
       path={{ APP_PATH }}/static
@@ -133,6 +164,8 @@
       mode=750
       owner=www-data
       group=www-data
+  when: not giscube_app_mode|bool
+  tags: setup
 
 - name: copy app static files
   django_manage:
@@ -143,6 +176,9 @@
   when: APP_DJANGO == True
   become: true
   become_user: www-data
+  tags:
+    - collectstatic
+    - static
 
 - name: reload app
   file: path={{ APP_PATH }}/{{ UWSGI_INI_FILE }} state=touch

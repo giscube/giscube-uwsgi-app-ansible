@@ -1,6 +1,8 @@
 ---
 # ENVIRONMENT_NAME: # default APP_NAME
 
+giscube_app_mode: False
+
 APP_DJANGO: True
 
 APP_DEBUG: True

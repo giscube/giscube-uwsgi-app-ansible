@@ -1,5 +1,6 @@
 ---
 
+# giscube-app
 - name: Create app/src directory
   file:
       path={{ APP_PATH }}/src
@@ -7,6 +8,8 @@
       mode=750
       owner="{{ APP_DEPLOY_USER }}"
       group=www-data
+  when: not giscube_app_mode|bool
+  tags: setup
 
 - name: Git checkout from public repo
   git:

@@ -5,8 +5,10 @@
     name:
     - python-psycopg2
     state: latest
+  tags: setup
 
 - include: db.yml
   when: APP_DB_CREATE == True and APP_DJANGO == True
+  tags: setup
 
 - include: app.yml
