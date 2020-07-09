@@ -3,7 +3,7 @@
 - name: Required for ansible database
   apt:
     name:
-    - python-psycopg2
+    - python3-psycopg2
     state: latest
 
 - include: db.yml
