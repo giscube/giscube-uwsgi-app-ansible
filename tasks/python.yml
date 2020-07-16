@@ -8,7 +8,21 @@
       owner="{{ APP_DEPLOY_USER }}"
       group=www-data
 
-- name: Create virtualenv python {{ APP_PYTHON_VERSION | ternary(APP_PYTHON_VERSION, APP_PYTHON3 | ternary('3', '2.7')) }}
+- name: Find python version
+  command: which python{{ APP_PYTHON_VERSION | ternary(APP_PYTHON_VERSION, APP_PYTHON3 | ternary('3', '2.7')) }}
+  register: python_version_found
+
+- name: "Create virtualenv python {{ APP_PYTHON_VERSION | ternary(APP_PYTHON_VERSION, APP_PYTHON3 | ternary('3', '2.7')) }}"
+  pip:
+      virtualenv_command="{{ python_version_found.stdout }} -m venv"
+      virtualenv={{ APP_PATH }}/venv
+      name=pip
+      state=latest
+  become: true
+  become_user: "{{ APP_DEPLOY_USER }}"
+  when: "APP_PYTHON_VERSION | ternary(APP_PYTHON_VERSION, APP_PYTHON3 | ternary('3', '2.7')) != '2.7'"
+
+- name: "Create virtualenv python {{ APP_PYTHON_VERSION | ternary(APP_PYTHON_VERSION, APP_PYTHON3 | ternary('3', '2.7')) }}"
   pip:
       virtualenv_python=python{{ APP_PYTHON_VERSION | ternary(APP_PYTHON_VERSION, APP_PYTHON3 | ternary('3', '2.7')) }}
       virtualenv={{ APP_PATH }}/venv
@@ -16,11 +30,4 @@
       state=latest
   become: true
   become_user: "{{ APP_DEPLOY_USER }}"
-
-# alternative with with_first_found
-# - include: "{{ item }}"
-#   with_first_found:
-#     - files:
-#         - default-{{ APP_PYTHON3 | ternary('python3', 'python2') }}.yml
-#       paths:
-#         - virtualenv/
+  when: "APP_PYTHON_VERSION | ternary(APP_PYTHON_VERSION, APP_PYTHON3 | ternary('3', '2.7')) == '2.7'"
