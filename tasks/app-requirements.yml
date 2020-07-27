@@ -1,0 +1,15 @@
+---
+
+
+- name: "Check if {{ APP_PATH }}/src/{{ item }} file exists"
+  stat:
+    path: "{{ APP_PATH }}/src/{{ item }}"
+  register: requirements
+
+- name: "install app requirements"
+  pip:
+    virtualenv: "{{ APP_PATH }}/venv"
+    requirements: "{{ APP_PATH }}/src/{{ item }}"
+  when: requirements.stat.exists is defined
+  become: true
+  become_user: "{{ APP_DEPLOY_USER }}"
