@@ -1,16 +1,11 @@
 ---
 
-- name: uWSGI configuration file
-  set_fact:
-      UWSGI_INI_FILE=uwsgi{{ APP_UWSGI_ONDEMAND | ternary('_ondemand', '') }}{{ APP_PYTHON3 | ternary('3', '') }}.ini
-
-- name: "copy configuration... {{ UWSGI_INI_FILE }}, vars.ini"
+- name: "copy configuration... vars.ini"
   template:
     src=conf/{{ item }}.j2 dest={{ APP_PATH }}/{{ item }}
     owner=www-data
     group=www-data
     mode=0600
   with_items:
-    - "{{ UWSGI_INI_FILE }}"
     - vars.ini
   tags: config

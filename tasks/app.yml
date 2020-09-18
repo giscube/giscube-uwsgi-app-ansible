@@ -8,21 +8,8 @@
       owner=root
       group=root
 
-- name: Application code checkout
-  include: app-src-checkout.yml
-#  when: APP_CODE_PATH | trim == ''
-  when: (APP_CODE_PATH is none) or (APP_CODE_PATH | trim == '')
-
-- name: Application code linking
-  include: app-src-link.yml
-  when: not((APP_CODE_PATH is none) or (APP_CODE_PATH | trim == ''))
-
-# follow="false" needed to set permissions to dest (link) and not src path
-- name: link source code to standar "app" dir
-  file: state=link owner=root group=root force=yes
-        src="src{{ APP_APP_FOLDER | ternary('/', '') }}{{ APP_APP_FOLDER }}"
-        dest="{{ APP_PATH }}{{ (APP_PATH[-1] == '/') | ternary('', '/') }}app"
-        follow="false"
+- name: Save local docker image
+  cmd: docker save microdisseny_erp:latest $PWD/tmp/"{{ APP_NAME }}".tar
 
 - name: copy template_vars.ini
   copy:
@@ -35,84 +22,31 @@
      APP_ENVIRONMENT_NAME: "{{ APP_NAME }}"
   when: APP_ENVIRONMENT_NAME is not defined or APP_ENVIRONMENT_NAME == ''
 
-# script must be available before copying uwsgi configuration
-- name: copy uwsgi.pre.sh utility script
-  copy:
-    src=conf/uwsgi.pre.sh dest={{ APP_PATH }}/uwsgi.pre.sh
-    owner=root group=root mode=0700
-
 - name: uWSGI configuration
   include: uwsgi.yml
 
-- name: create uwsgi.sock link if it does not exists
-  file:
-    src: "run/uwsgi.sock"
-    dest: "{{ APP_PATH }}/uwsgi.sock"
-    state: link
-    force: yes
-  when: uwsgisock.stat.islnk is not defined or uwsgisock.stat.islnk == False
-
-- name: copy vars.sh utility script
-  copy:
-    src=conf/vars.sh dest={{ APP_PATH }}/vars.sh
-    owner=root group=root mode=0755
-
-- name: copy env.sh utility script
-  copy:
-    src=conf/env.sh dest={{ APP_PATH }}/env.sh
-    owner=root group=root mode=0644
-
-- name: Virtualenv creation
-  include: python.yml
-
-- include: app-requirements.yml
-  with_items: "{{  APP_REQUIREMENTS.split(',') }}"
-
-- name: make manage.py executable
-  file:
-    path: "{{ APP_PATH }}/app/manage.py"
-    mode: 0755
-  when: APP_DJANGO == True
-
-- set_fact:
-      default_app_environment:
-        SECRET_KEY: "{{ APP_SECRET_KEY }}"
-        DB_NAME: "{{ APP_DB_NAME }}"
-        DB_USER: "{{ APP_DB_USER }}"
-        DB_PASSWORD: "{{ APP_DB_PASSWORD }}"
-        # Deprecated, use DB_HOST
-        DB_HOSTNAME: "{{ APP_DB_HOSTNAME }}"
-        DB_HOST: "{{ APP_DB_HOST }}"
-        DB_PORT: "{{ APP_DB_PORT }}"
-        ENVIRONMENT_NAME: "{{ APP_ENVIRONMENT_NAME }}"
-        STATIC_ROOT: "{{ APP_PATH }}/static/"
-
-- set_fact:
-      app_environment: "{{ default_app_environment | combine(APP_EXTRA_VARS) }}"
-
-
-- name: run migrations
-  django_manage:
-    command: migrate
-    app_path: "{{ APP_PATH }}/app/"
-    virtualenv: "{{ APP_PATH }}/venv/"
-  environment: "{{ app_environment }}"
-  when: APP_DJANGO == True and APP_RUN_MIGRATIONS == True
-  become: true
-  become_user: www-data
-  tags: migrate
-
-- name: "Load fixtures: {{ APP_LOAD_FIXTURES }}"
-  django_manage:
-    command: loaddata
-    app_path: "{{ APP_PATH }}/app/"
-    virtualenv: "{{ APP_PATH }}/venv/"
-    fixtures: "{{ APP_LOAD_FIXTURES }}"
-  environment: "{{ app_environment }}"
-  become: true
-  become_user: www-data
-  tags: loaddata
-  when: "(APP_DJANGO == True) and (APP_LOAD_FIXTURES is not none) and (APP_LOAD_FIXTURES != '')"
+# - name: run migrations
+#   django_manage:
+#     command: migrate
+#     app_path: "{{ APP_PATH }}/app/"
+#     virtualenv: "{{ APP_PATH }}/venv/"
+#   environment: "{{ app_environment }}"
+#   when: APP_DJANGO == True and APP_RUN_MIGRATIONS == True
+#   become: true
+#   become_user: www-data
+#   tags: migrate
+#
+# - name: "Load fixtures: {{ APP_LOAD_FIXTURES }}"
+#   django_manage:
+#     command: loaddata
+#     app_path: "{{ APP_PATH }}/app/"
+#     virtualenv: "{{ APP_PATH }}/venv/"
+#     fixtures: "{{ APP_LOAD_FIXTURES }}"
+#   environment: "{{ app_environment }}"
+#   become: true
+#   become_user: www-data
+#   tags: loaddata
+#   when: "(APP_DJANGO == True) and (APP_LOAD_FIXTURES is not none) and (APP_LOAD_FIXTURES != '')"
 
 - name: Create app/static directory
   file:
@@ -122,16 +56,16 @@
       owner=www-data
       group=www-data
 
-- name: copy app static files
-  django_manage:
-    command: collectstatic
-    app_path: "{{ APP_PATH }}/app/"
-    virtualenv: "{{ APP_PATH }}/venv/"
-  environment: "{{ app_environment }}"
-  when: APP_DJANGO == True
-  become: true
-  become_user: www-data
+# - name: copy app static files
+#   django_manage:
+#     command: collectstatic
+#     app_path: "{{ APP_PATH }}/app/"
+#     virtualenv: "{{ APP_PATH }}/venv/"
+#   environment: "{{ app_environment }}"
+#   when: APP_DJANGO == True
+#   become: true
+#   become_user: www-data
 
-- name: reload app
-  file: path={{ APP_PATH }}/{{ UWSGI_INI_FILE }} state=touch
-  tags: code, config
+# - name: reload app
+#   file: path={{ APP_PATH }}/{{ UWSGI_INI_FILE }} state=touch
+#   tags: code, config
