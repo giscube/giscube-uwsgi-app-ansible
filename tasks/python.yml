@@ -17,7 +17,7 @@
       virtualenv_command="{{ python_version_found.stdout }} -m venv"
       virtualenv={{ APP_PATH }}/venv
       name=pip
-      state=latest
+      version=20.2.2
   become: true
   become_user: "{{ APP_DEPLOY_USER }}"
   when: "APP_PYTHON_VERSION | ternary(APP_PYTHON_VERSION, APP_PYTHON3 | ternary('3', '2.7')) != '2.7'"
@@ -27,7 +27,7 @@
       virtualenv_python=python{{ APP_PYTHON_VERSION | ternary(APP_PYTHON_VERSION, APP_PYTHON3 | ternary('3', '2.7')) }}
       virtualenv={{ APP_PATH }}/venv
       name=pip
-      state=latest
+      version=20.2.2
   become: true
   become_user: "{{ APP_DEPLOY_USER }}"
   when: "APP_PYTHON_VERSION | ternary(APP_PYTHON_VERSION, APP_PYTHON3 | ternary('3', '2.7')) == '2.7'"
