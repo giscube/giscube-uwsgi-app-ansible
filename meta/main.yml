@@ -2,7 +2,7 @@
 dependencies: []
 
 galaxy_info:
-  author: abusquets
+  author: Microdisseny Giscube SLU
   description: Giscube base role for deploy uwsgi apps
   company: "Giscube"
   license: "license (BSD, MIT)"
