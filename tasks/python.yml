@@ -10,6 +10,7 @@
 
 - name: Find python version
   command: which python{{ APP_PYTHON_VERSION | ternary(APP_PYTHON_VERSION, APP_PYTHON3 | ternary('3', '2.7')) }}
+  check_mode: no
   register: python_version_found
 
 - name: "Create virtualenv python {{ APP_PYTHON_VERSION | ternary(APP_PYTHON_VERSION, APP_PYTHON3 | ternary('3', '2.7')) }}"
