@@ -13,6 +13,12 @@
   become_user: postgres
   when: APP_DB_POSTGIS == True
 
+- name: Create Unaccent extension
+  postgresql_ext: name=unaccent db={{ APP_DB_NAME }}
+  become: yes
+  become_user: postgres
+  when: APP_DB_UNACCENT == True
+
 - name: "Create {{ APP_DB_USER }} user"
   postgresql_user:
       db={{ APP_DB_NAME }}
